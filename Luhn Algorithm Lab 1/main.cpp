@@ -10,7 +10,7 @@ int main(int argc, char** argv) {
     cin>>card;
     
    
-    luhnChecker(card, card.length())? (cout<<"Card Valid"<<endl) : (cout<<"Card Invalid"<<endl) ;%
+    luhnChecker(card, card.length())? (cout<<"Card Valid"<<endl) : (cout<<"Card Invalid"<<endl) ;
     
     
     return 0;
