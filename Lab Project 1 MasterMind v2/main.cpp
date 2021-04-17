@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
+#include <unordered_map>
 
 using namespace std;
 
@@ -11,7 +12,10 @@ void createCode(int[], int, int);
 void enterGuess(int[], int, int);
 string getResult(int[], int[], int);
 int main(int argc, char** argv) {
+    char flag;
     masterMind();
+    
+    
     return 0;
 }
 
@@ -21,6 +25,7 @@ void masterMind(){
     //prompt
     
     //do-while loop to detect invalid invalid inputs for the the size
+    cout<<"Please enter the a size of pegs you want to play with from 4 and 8"<<endl;
     do{
         cout<<"SIZE: ";
         cin>>SIZE;
@@ -33,6 +38,9 @@ void masterMind(){
         win_result += '+';
     }
     //do-while loop to catch invalid inputs for the duplication options
+    cout<<"Please enter whether you want duplicates or not"<<endl;
+    cout<<"0. Duplicates OFF"<<endl;
+    cout<<"1. Duplicated ON"<<endl;
     do{
         //prompt
         cout<<"Duplicates: ";
@@ -43,7 +51,7 @@ void masterMind(){
     //create arrays to hold the guess and code
     int code[SIZE];
     int guess[SIZE];
-    
+
     //string array for result
     string result;
     for(int i = 0; i < SIZE; i++){
@@ -52,13 +60,27 @@ void masterMind(){
     cout<<result<<endl;
     //generates the code
     createCode(code, SIZE, dupe);
-    
+    printCode(code, SIZE);
+    cout<<endl;
     //game run
     short turns = 0;
     while(turns != 10 && result != win_result){
         cout<<"=========TURN: "<<turns+1<<"=========="<<endl;
         enterGuess(guess, SIZE, dupe);
         turns++;
+        printCode(guess, SIZE);
+        result = getResult(code, guess, SIZE);
+        cout<<"Result: " << result << endl;
+    }
+    if(result == win_result){
+        cout<<"CONGRATS YOU WON!!"<<endl;
+        cout<<"YOU WON IN " << turns << " TURNS"<< endl;
+        cout<<"The winning code is: ";
+        printCode(code, SIZE);
+    }else{
+        cout<<"YOU LOST :( "<<endl;
+        cout<<"The correct code is: ";
+        printCode(code, SIZE);
     }
     
 }
@@ -88,7 +110,7 @@ bool inArray(int code[], int num, int SIZE){
 }
 
 void printCode(int code[], int SIZE){
-    cout<<'[';
+    cout<<"[ ";
     for(int i = 0; i < SIZE; i++){
         cout<<code[i]<<' ';
     }
@@ -102,9 +124,9 @@ void enterGuess(int guess[], int SIZE, int dupe){
             cout<<"Please enter numbers between 1 and 8 no duplicates"<<endl;
             cout<<"Please enter hole #"<<i+1<<':';
             cin>>guess[i];
-            while(inArray(guess, guess[i], i)){
-                cout<<"ERROR: NUMBER ENTERED FOUND IN ARRAY"<<endl;
-                cout<<"PLEASE DO NOT ENTER DUPLICATES"<<endl;
+            while(guess[i] < 1 || guess[i]>8 || inArray(guess, guess[i], i)){
+                cout<<"ERROR: INVALID NUMBER INPUTTED"<<endl;
+                cout<<"PLEASE DO NOT ENTER DUPLICATES OR ANYTHING LESS THAN 1 OR GREATER THAN 8"<<endl;
                 cout<<"Please enter hole #"<<i+1<<':';
                 cin>>guess[i];
             }
@@ -117,5 +139,33 @@ void enterGuess(int guess[], int SIZE, int dupe){
 }
 
 string getResult(int code[], int guess[], int SIZE){
-    
+    unordered_map<int, int> freq;
+    char result[SIZE];
+    string str;
+    for(int i = 0; i < SIZE; i++){
+        freq[code[i]]++;
+        result[i] += '_';
+    }
+
+    int arr_pos = 0;
+    for(int i = 0; i < SIZE; i++){
+        if(freq[guess[i]] > 0){
+            result[arr_pos] = '-';
+            arr_pos++;
+            freq[guess[i]]--;
+        }
+    }
+
+    arr_pos = 0;
+    for(int i = 0; i < SIZE; i++){
+        if(guess[i] == code[i]){
+            result[arr_pos] = '+';
+            arr_pos++;
+        }
+    }
+    for(int i = 0; i < SIZE; i++){
+        str += result[i];
+    }
+    cout<<endl;
+    return str;
 }
