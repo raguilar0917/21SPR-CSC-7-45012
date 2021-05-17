@@ -9,11 +9,11 @@ CND_DISTDIR=dist
 # Debug configuration
 CND_PLATFORM_Debug=Cygwin-Windows
 CND_ARTIFACT_DIR_Debug=dist/Debug/Cygwin-Windows
-CND_ARTIFACT_NAME_Debug=lab_hashing_1
-CND_ARTIFACT_PATH_Debug=dist/Debug/Cygwin-Windows/lab_hashing_1
+CND_ARTIFACT_NAME_Debug=bloom_filter
+CND_ARTIFACT_PATH_Debug=dist/Debug/Cygwin-Windows/bloom_filter
 CND_PACKAGE_DIR_Debug=dist/Debug/Cygwin-Windows/package
-CND_PACKAGE_NAME_Debug=labhashing1.tar
-CND_PACKAGE_PATH_Debug=dist/Debug/Cygwin-Windows/package/labhashing1.tar
+CND_PACKAGE_NAME_Debug=bloomfilter.tar
+CND_PACKAGE_PATH_Debug=dist/Debug/Cygwin-Windows/package/bloomfilter.tar
 # Release configuration
 CND_PLATFORM_Release=GNU-MacOSX
 CND_ARTIFACT_DIR_Release=dist/Release/GNU-MacOSX
