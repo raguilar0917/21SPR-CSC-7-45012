@@ -3,7 +3,7 @@
     CSC 7 Template for Mastermind AI
     May 11th, 2021
  */
-
+//final
 //System Libraries
 #include <iostream>
 #include <cstdlib>
@@ -22,7 +22,11 @@ string set();
 int toInt(char num){return (num - '0');}
 char toChar(int num){return num+'0';}
 void swap(char*, char*);
-
+void printRR(char rr[], char rw[]){
+    for(int i = 0; i < 30; i++){
+        cout<<i<<": "<<to_string(rr[i])<<" " << to_string(rw[i])<<endl;
+    }
+}
 int main(int argc, char** argv) {
     //Set the random number seed
     srand(static_cast<unsigned int>(time(0)));
@@ -43,7 +47,7 @@ int main(int argc, char** argv) {
        nGuess++;
        guess=myAI(rr,rw);
        string RR=to_string(rr), RW=to_string(rw);
-       cout<<nGuess<<": "<<guess<<" "<<RR<<" "<< RW <<endl;
+       cout<<nGuess<<": YOUR INPUT "<<guess<<" "<<RR<<" "<< RW <<endl;
        if(!(nGuess % 30)){int a; cin>>guess;}
        //cout<<guess<<endl;
     }while(eval(code,guess,rr,rw));
@@ -121,6 +125,7 @@ string myAI(char rr, char rw){
     static  string otherTwo = "00";
     //static int pos[2];
     static string finalGuess = "0000";
+    static int valIndx[2];
     static int pos = 0;
     static bool sameNum = false;
     static int bad_pos=0;
@@ -136,7 +141,9 @@ string myAI(char rr, char rw){
     //Store the results from the last guess
     grr[guess]=rr;
     grw[guess]=rw;
-    
+    //for(int i = 0; i < guess; i++){
+    //    cout<<to_string(grr[i])<<" "<<to_string(grw[i])<<endl;
+    // }
     
         
     if(guess == 0){
@@ -231,7 +238,7 @@ string myAI(char rr, char rw){
             confirmedCols[pos++] = '9';
         }
     }
-    cout<<"Other: "<<otherTwo<<endl;
+    
     if(firstTwo){
         cout<<"ENDGAME"<<endl;
         int indx = 0;
@@ -252,6 +259,8 @@ string myAI(char rr, char rw){
         if(guess == 11 && !firstTwo){
                 sGuess[0] = confirmedCols[0];
                 sGuess[1] = confirmedCols[1];
+                valIndx[0] = 0;
+                valIndx[1] = 1;
 
                 //saves other two
                 otherTwo[0] = confirmedCols[2];
@@ -334,16 +343,153 @@ string myAI(char rr, char rw){
                 }
             }
         }
+        if(guess == 15 && !firstTwo){//swap  right inch
+            sGuess = aGuess[guess];
+
+            if(rr == 2){ 
+                finalGuess = sGuess;
+                firstTwo = true;
+            }
+            if((sGuess[1] == sGuess[2]) && dupes){
+                swap(sGuess[0], sGuess[1]);//X0X0
+            }
+            else{
+                if((rr == 1 && rw == 1)){
+                    cout<<"entered 15A: "<<sGuess<<endl;
+                    swap(sGuess[2], sGuess[3]);//-YX- or X-Y-
+                }
+                if((rr == 0 && rw == 2) && (grr[guess] == 1 && grw[guess] == 1)){
+                    cout<<"entered 15B"<<endl;
+                    sGuess = aGuess[guess-1];
+                    swap(sGuess[2], sGuess[3]);//Y-X-
+                }else{
+                    if(rr == 0 && rw == 2){
+                        cout<<"entered 15C"<<endl;
+                        swap(sGuess[0], sGuess[1]);//-X-Y
+                    }
+                }
+            }
+        }
+        if(guess == 16 && !firstTwo){//swap  right inch
+            sGuess = aGuess[guess];
+
+            if(rr == 2){ 
+                finalGuess = sGuess;
+                firstTwo = true;
+            }
+            if((sGuess[0] == sGuess[2]) && dupes){
+                swap(sGuess[0], sGuess[1]);//0X0X
+                swap(sGuess[2], sGuess[3]);
+
+            }
+
+            else{
+                if((rr == 1 && rw == 1)){
+                    cout<<"entered 16A"<<sGuess<<endl;
+                    swap(sGuess[1], sGuess[2]);//-YX- or X-Y-
+                }
+                if((rr == 0 && rw == 2) && (grr[guess-1] == 1 && grw[guess-1] == 1)){
+                    cout<<"entered 16B: "<<sGuess<<endl;
+                    sGuess = aGuess[guess-1];
+                    cout<<"in 16B: "<<sGuess<<endl;
+                    swap(sGuess[3], sGuess[2]);//Y-X-
+                }
+            }
+        }
         
-        
-        
-        
+        if(guess == 17 && !firstTwo){//swap  right inch
+            sGuess = aGuess[guess];
+
+           // printRR(grr, grw);
+            if(rr == 2){ 
+                finalGuess = sGuess;
+                firstTwo = true;
+            }
+            if((sGuess[0] == sGuess[2]) && dupes){
+                swap(sGuess[2], sGuess[3]);
+                swap(sGuess[0], sGuess[2]);//0X0X
+                
+
+            }
+
+            else{
+                if((rr == 1 && rw == 1)){
+                    cout<<"entered 17A"<<endl;
+                    swap(sGuess[3], sGuess[2]);//-YX- or X-Y-
+                }
+                if((rr == 0 && rw == 2) && ((grr[guess-1] == 1 && grw[guess-1] == 1))){
+                    cout<<"entered 17B: "<<sGuess<<endl;
+                    sGuess = aGuess[guess-1];
+                    cout<<"entered 17B: "<<sGuess<<endl;
+                    cout<<sGuess<<endl;
+                    swap(sGuess[3], sGuess[2]);//Y-X-
+                }else{
+                    if((rr == 0 && rw == 2)){
+                        cout<<"entered 17c"<<endl;
+                       // swap(sGuess[2], sGuess[3]);//Y-X-
+                    }
+                }
+            }
+        }
+        /***
+        if(guess == 18 && !firstTwo){//swap  right inch
+            sGuess = aGuess[guess];
+
+            if(rr == 2){ 
+                finalGuess = sGuess;
+                firstTwo = true;
+            }
+            if((sGuess[0] == sGuess[2]) && dupes){
+                swap(sGuess[0], sGuess[1]);//0X0X
+                swap(sGuess[2], sGuess[3]);
+
+            }
+
+            else{
+                if((rr == 1 && rw == 1)){
+                    cout<<"entered 17A"<<endl;
+                    swap(sGuess[3], sGuess[2]);//-YX- or X-Y-
+                }
+                cout<<"rr: "<< to_string(rr)<<" rw: "<<to_string(rw)<<endl;
+                cout<<"rr: "<< to_string(grr[guess-2])<<" rw: "<<to_string(grw[guess-2])<<endl;
+                
+                if((rr == 0 && rw == 2) && (grr[guess-2] == 1 && grw[guess-2] == 1)){
+                    cout<<"entered 17B"<<endl;
+                    sGuess = aGuess[guess-2];
+                    swap(sGuess[1], sGuess[2]);//Y-X-
+                }else{
+                    if((rr == 0 && rw == 2)){
+                        cout<<"entered 17c"<<endl;
+                       // swap(sGuess[2], sGuess[3]);//Y-X-
+                    }
+                }
+            }
+        }
+        ***/
     }
     
-    cout<<endl<<guess+1<<". Confirmed Number: "<<confirmedCols;
+    
+ 
+    
+   /***
+    //Calculate the guess
+    int n1000=(guess-guess%1000)/1000;
+    int n100=(guess-guess%100)/100-10*n1000;
+    int n10=(guess%100-guess%10)/10;
+    int n1=guess%10;
+    sGuess[0]=n1000+'0';
+    sGuess[1]=n100+'0';
+    sGuess[2]=n10+'0';
+    sGuess[3]=n1+'0';
+    
+    
+     * * */
+    
     aGuess[++guess]=sGuess;//Save the result
             
-    cout<<"  "<<aGuess[guess-1]<<endl<<endl;
+    
+    cout<<endl<<"Confirmed Number: "<<confirmedCols<<endl;
+    cout<<"Previous Response: "<<aGuess[guess-1]<<endl;
     return sGuess;
 }
 

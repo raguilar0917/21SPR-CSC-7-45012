@@ -10,18 +10,12 @@
 #include <ctime>
 #include <string>
 #include <iomanip>
-#include <algorithm>
-#include <vector>
 using namespace std;
 
 //Function Prototypes
 string AI(char,char);
-string myAI(char, char);
 bool eval(string,string,char &,char &);
 string set();
-int toInt(char num){return (num - '0');}
-char toChar(int num){return num+'0';}
-void swap(char*, char*);
 
 int main(int argc, char** argv) {
     //Set the random number seed
@@ -34,22 +28,20 @@ int main(int argc, char** argv) {
     
     //Initialize Values
     nGuess=0;
-    code="5921";//set();
+    code=set();
     rr=rw=0;
-    
+    int pause;
+    cout<<"Code: "<<code<<endl;
     //Loop until solved and count to find solution
-    cout<<"Code: " << code << endl;
     do{
        nGuess++;
-       guess=myAI(rr,rw);
-       string RR=to_string(rr), RW=to_string(rw);
-       cout<<nGuess<<": "<<guess<<" "<<RR<<" "<< RW <<endl;
-       if(!(nGuess % 30)){int a; cin>>guess;}
-       //cout<<guess<<endl;
+       guess=AI(rr,rw);
+       cout<<nGuess<<": Your Input: "<<guess<<" "<<to_string(rr)<<" "<<to_string(rw)<<endl;
+       if(!(nGuess % 30)){int a; cin>>a;}
     }while(eval(code,guess,rr,rw));
     //Check evaluation
     cout<<nGuess<<" "<<code<<" "<<guess<<endl;
-    guess=myAI(rr,rw);
+    guess=AI(rr,rw);
     /*cout<<code<<endl;
     for(int i=0;i<10000;i++){
         guess=AI(0,0);
@@ -63,13 +55,6 @@ int main(int argc, char** argv) {
     return 0;
 }
 
-void swap(char* val1, char* val2){
-    char temp = *val1;
-    *val1 = *val2;
-    *val2 = temp;
-}
-    
-
 string AI(char rr,char rw){
     //Define helper functions here
     void (*print)(string [],char [],char [],int,int)=
@@ -82,42 +67,8 @@ string AI(char rr,char rw){
     };
     
     //Save the historical values of guesses and results
-    static const int SIZE=10000;//How many guesses to save
-    static string aGuess[SIZE]; //Save the guesses
-    static char grr[SIZE];      //Save right guess in right spot
-    static char grw[SIZE];      //Save right guess in wrong spot
-    static int guess=0;         //Increment the guess number
-    string sGuess="0000";       //Size the guest string
-    
-    //Store the results from the last guess
-    grr[guess]=rr;
-    grw[guess]=rw;
-    
-    //Test the helper function
-    if(rr==4)print(aGuess,grr,grw,
-            guess-10>0?guess-10:0,guess);
-    
-    //Calculate the guess
-    int n1000=(guess-guess%1000)/1000;
-    int n100=(guess-guess%100)/100-10*n1000;
-    int n10=(guess%100-guess%10)/10;
-    int n1=guess%10;
-    sGuess[0]=n1000+'0';
-    sGuess[1]=n100+'0';
-    sGuess[2]=n10+'0';
-    sGuess[3]=n1+'0';
-    aGuess[++guess]=sGuess;//Save the result
-    
-    //Return the result
-    return sGuess;
-}
-
-
-
-string myAI(char rr, char rw){
-    //Save the historical values of guesses and results
     static bool firstTwo = false;
-    static bool dupes = false;
+    static bool dupe = false;
     static  string otherTwo = "00";
     //static int pos[2];
     static string finalGuess = "0000";
@@ -136,9 +87,6 @@ string myAI(char rr, char rw){
     //Store the results from the last guess
     grr[guess]=rr;
     grw[guess]=rw;
-    
-    
-        
     if(guess == 0){
         confirmedCols = "0000";
     }
@@ -151,7 +99,6 @@ string myAI(char rr, char rw){
         }
         
     }
-   
     if(guess == 2){
         if(rr == 0){ badNums[bad_pos++] = '1';}
         sGuess = "2222";
@@ -220,7 +167,6 @@ string myAI(char rr, char rw){
     if(guess == 9){
         if(rr == 0){ badNums[bad_pos++] = '8';}
         sGuess = "9999";
-        cout<<"POS "<<pos<<endl;
         while(rr > 0){
             confirmedCols[pos++] = '8';
             rr--;
@@ -231,7 +177,7 @@ string myAI(char rr, char rw){
             confirmedCols[pos++] = '9';
         }
     }
-    cout<<"Other: "<<otherTwo<<endl;
+    
     if(firstTwo){
         cout<<"ENDGAME"<<endl;
         int indx = 0;
@@ -243,107 +189,183 @@ string myAI(char rr, char rw){
             }
         }
         swap(otherTwo[0], otherTwo[1]);
-    }
-    else{
+    }else{
         if(guess == 10){
-            sGuess = confirmedCols;//XXXX
+            sGuess = confirmedCols;
         }
+        if(guess == 11){
+            sGuess[0] = confirmedCols[0];
+            sGuess[1] = confirmedCols[1];
 
-        if(guess == 11 && !firstTwo){
-                sGuess[0] = confirmedCols[0];
-                sGuess[1] = confirmedCols[1];
+            //saves other two
+            otherTwo[0] = confirmedCols[2];
+            otherTwo[1] = confirmedCols[3];
 
-                //saves other two
-                otherTwo[0] = confirmedCols[2];
-                otherTwo[1] = confirmedCols[3];
-
-                sGuess[2] = badNums[0];
-                sGuess[3] = badNums[0];
-
-
-
-                //XY-- or XX--
+            sGuess[2] = badNums[0];
+            sGuess[3] = badNums[0];
         }
-
-        if(guess == 12 && !firstTwo){//first swap
-            sGuess = aGuess[guess];
-            cout<<"Before: "<<sGuess<<endl;
-
-            if(rr == 2){ 
-                finalGuess = sGuess;
+        if(guess == 12){
+            sGuess = aGuess[guess];// gets guess from 11
+            if(rr == 2){
                 firstTwo = true;
+                finalGuess = sGuess;
             }
             if(sGuess[0] == sGuess[1]){
-                cout<<"enter dupe 1"<<endl;
-                swap(sGuess[3], sGuess[1]);//X00X
-                cout<<"After: "<<sGuess<<endl;
-                dupes = true;
-            }
-            else{
-                cout<<"rr: "<< to_string(rr)<<" rw: "<<to_string(rw)<<endl;
-                if((rr == 1 && rw == 1) || (rr == 0 && rw == 2)){
-                    cout<<"entered 12"<<endl;
-                    swap(sGuess[0], sGuess[1]);//YX--
-                    
-                }
+                dupe = true;
+                swap(sGuess[1], sGuess[3]);//X00X
                 
-            }
-            
-        }
-        if(guess == 13 && !firstTwo){//second spread
-            sGuess = aGuess[guess];
-            cout<<"after dupe 1: "<<sGuess<<endl;
-            if(rr == 2){ 
-                finalGuess = sGuess;
-                firstTwo = true;
-            }
-            if((sGuess[0] == sGuess[3]) && dupes){
-                cout<<"enter dupe 2"<<endl;
-                swap(sGuess[0], sGuess[1]);//0X0X
-            }
-            else{
-                if((rr == 1 && rw == 1) || (rr == 0 && rw == 2)){
-                    cout<<"entered 13A"<<endl;
-                    swap(sGuess[1], sGuess[3]);//Y--X
+            }else{
+                if((rr==0&&rw==2)||(rr==1&&rr==1)){
+                    swap(sGuess[0], sGuess[1]);
                 }
-                if((rr == 0 && rw == 2) && (grr[guess-1] == 1 && grw[guess-1] == 1)){
-                    cout<<"entered 13B"<<endl;
+            }
+        }
+        if(guess == 13){//spread out
+            sGuess = aGuess[guess];// gets guess from 11
+            if(rr == 2){
+                firstTwo = true;
+                finalGuess = sGuess;
+            }
+            if(dupe == true){
+                swap(sGuess[0], sGuess[1]);//OX0X
+            }else{
+                if((rr==0&&rw==2)||(grr[guess-1]==1&&grr[guess-1]==1)){
                     sGuess = aGuess[guess-1];
                     swap(sGuess[1], sGuess[3]);//X--Y
+                }else{
+                    swap(sGuess[1], sGuess[3]);//y--X
                 }
             }
         }
-        if(guess == 14 && !firstTwo){//swap  left inch
-            sGuess = aGuess[guess];
-
-            if(rr == 2 && !firstTwo){ 
-                finalGuess = sGuess;
+        if(guess == 14){//Fail safe
+            sGuess = aGuess[guess];// gets guess from 11
+            if(rr == 2){
                 firstTwo = true;
+                finalGuess = sGuess;
             }
-            if((sGuess[1] == sGuess[3]) && dupes){
-                swap(sGuess[2], sGuess[3]);//0XX0
+          
+            if(dupe == true){
+                swap(sGuess[2], sGuess[3]);//OXXO
+            }else{
+                if((rr==0&&rw==2)){
+                    sGuess = aGuess[guess-1];
+                    swap(sGuess[1], sGuess[3]);//X--Y --> Y--X
+                }else{
+                    swap(sGuess[0], sGuess[1]);//y--X
+                }
+            }
+        }
+        if(guess == 15){//inch [0] <=> [1]
+            sGuess = aGuess[guess];// gets guess from 11
+            if(rr == 2){
+                firstTwo = true;
+                finalGuess = sGuess;
+            }
+          
+            if(dupe == true){
+                swap(sGuess[0], sGuess[1]);//X0X0
+            }else{
+                if((rr==0&&rw==2)){
+                    sGuess = aGuess[guess-1];
+                    swap(sGuess[0], sGuess[3]);
+                    swap(sGuess[0], sGuess[1]);
+                }else{
+                    swap(sGuess[0], sGuess[1]);//y--X
+                }
+            }
+        }
+        if(guess == 16){//inch [3] <=> [2]
+            sGuess = aGuess[guess];// gets guess from 11
+            if(rr == 2){
+                firstTwo = true;
+                finalGuess = sGuess;
+            }
+          
+            if(dupe == true){
+                swap(sGuess[2], sGuess[3]);//X00X
+                swap(sGuess[0], sGuess[2]);//00XX
+            }else{
+                swap(sGuess[0], sGuess[1]);
+            }
+        }
+        if(guess == 17){//inch [0] <=> [1]
+            sGuess = aGuess[guess];// gets guess from 11
+            if(rr == 2){
+                firstTwo = true;
+                finalGuess = sGuess;
+            }
+          
+            if(dupe == true){
+                swap(sGuess[2], sGuess[3]);//OX0X
+            }else{
+                swap(sGuess[0], sGuess[1]);
+            }
+        }
+        if(guess == 18){//inch [0] <=> [1]
+            sGuess = aGuess[guess];// gets guess from 11
+            if(rr == 2){
+                firstTwo = true;
+                finalGuess = sGuess;
+            }
+          
+            if(dupe == true){
+                swap(sGuess[2], sGuess[3]);//OX0X
+            }else{
+                swap(sGuess[1], sGuess[2]);
+            }
+        }
+        if(guess == 19){//inch [0] <=> [1]
+            sGuess = aGuess[guess];// gets guess from 11
+            if(rr == 2){
+                firstTwo = true;
+                finalGuess = sGuess;
             }
             else{
-                if((rr == 1 && rw == 1)){
-                    cout<<"entered 14A"<<endl;
-                    swap(sGuess[0], sGuess[1]);//-Y-X or -X-Y
-                }
-                if((rr == 0 && rw == 2)){
-                    cout<<"entered 14B"<<endl;
-                    swap(sGuess[0], sGuess[3]);//X--Y
-                }
+                swap(sGuess[0], sGuess[3]);
             }
         }
-        
-        
+        if(guess == 20){//inch [0] <=> [1]
+            sGuess = aGuess[guess];// gets guess from 11
+            if(rr == 2){
+                firstTwo = true;
+                finalGuess = sGuess;
+            }else{
+                swap(sGuess[0], sGuess[1]);
+            }
+        }
+        if(guess == 21){//inch [0] <=> [1]
+            sGuess = aGuess[guess];// gets guess from 11
+            if(rr == 2){
+                firstTwo = true;
+                finalGuess = sGuess;
+            }else{
+                swap(sGuess[1], sGuess[2]);
+            }
+        }
+        if(guess == 22){//inch [0] <=> [1]
+            sGuess = aGuess[guess];// gets guess from 11
+            if(rr == 2){
+                firstTwo = true;
+                finalGuess = sGuess;
+            }else{
+                swap(sGuess[3], sGuess[2]);
+            }
+        }
+        if(guess ==23){
+            sGuess = aGuess[guess];// gets guess from 11
+            if(rr == 2){
+                firstTwo = true;
+                finalGuess = sGuess;
+            }
+        }
         
         
     }
     
-    cout<<endl<<guess+1<<". Confirmed Number: "<<confirmedCols;
+
     aGuess[++guess]=sGuess;//Save the result
-            
-    cout<<"  "<<aGuess[guess-1]<<endl<<endl;
+    cout<<"cNums: "<<confirmedCols<<endl;
+    //Return the result
     return sGuess;
 }
 
